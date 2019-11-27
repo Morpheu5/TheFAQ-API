@@ -5,6 +5,10 @@ require 'elasticsearch'
 require 'sinatra'
 require 'sinatra/reloader' if development?
 
+configure do
+  set :protection, except: [:json_csrf]
+end
+
 ### Configure Elasticsearch
 es_url = ENV['ES_URL']
 if es_url.nil? || es_url.empty?
@@ -13,14 +17,14 @@ if es_url.nil? || es_url.empty?
 end
 es = Elasticsearch::Client.new url: es_url, log: true
 
-# options '*' do
-#   response.headers['Allow'] = 'HEAD,GET,PUT,POST,DELETE,OPTIONS'
-#   response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
-#   response.headers['Access-Control-Allow-Origin'] = '*'
-#   200
-# end
-
 ### Make sure every response has the correct content type.
+options '*' do
+  response.headers['Allow'] = 'HEAD,GET,PUT,POST,DELETE,OPTIONS'
+  response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
+  response.headers['Access-Control-Allow-Origin'] = '*'
+  200
+end
+
 before '*' do
   response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
   response.headers['Access-Control-Allow-Origin'] = '*'
