@@ -49,6 +49,19 @@ get %r{/faq/([a-z\/-]+)} do |id|
     doc = es.get index: 'current_content',
                  type: 'doc',
                  id: id
+    if doc['_source']['index']
+      subdocs = es.search index: 'current_content',
+                          body: {
+                            query: {
+                              wildcard: {
+                                'id.keyword': id + '/*'
+                              }
+                            }
+                          }
+      return doc['_source'].merge(
+        subdocs: subdocs['hits']['hits'].map { |d| d['_source'] }
+      ).to_json
+    end
     doc['_source'].to_json
   rescue Elasticsearch::Transport::Transport::Errors::NotFound
     doc = es.search index: 'current_content',
