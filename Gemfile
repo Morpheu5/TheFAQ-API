@@ -7,9 +7,6 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 gem 'elasticsearch', '~> 7.0.0'
 gem 'sinatra'
 gem 'sinatra-cross_origin'
-# gem 'git'
-# gem 'psych'
-# gem 'slop'
 
 group :development do
   gem 'irb', require: false
